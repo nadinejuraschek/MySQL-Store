@@ -54,6 +54,7 @@ function customerPrompt() {
                     var remainingQuant = res[productID].stock_quantity - inquirerResponse.order_quantity;
                     if (remainingQuant < 0) {
                         console.log("Unfortunately, we are running too low on this product to complete your order. Please change the quantity of your order.");
+                        remainingQuant = res[productID].stock_quantity;
                     } else {
                         console.log("Your order has been placed! Thank you for shopping with us!");
                     };
@@ -71,25 +72,6 @@ function displayWelcome() {
     console.log("The Online Store That Makes Packing for Your Travel Needs a Breeze");
     console.log("---------------------------------------------");
 }
-
-// check quantity
-// function checkQuantity() {
-//     var remainingQuant = res[inquirerResponse.order_id-1].stock_quantity - inquirerResponse.order_quantity;
-//     console.log("Remaining Quantity: " + remainingQuant);
-//     if (remainingQuant < 0) {
-//         console.log("Unfortunately, we are running too low on this product to complete your order. Please change the quantity of your order.");
-//         inquirer.prompt([
-//             {
-//                 name: "order_quantity",
-//                 message: "How many would you like to purchase?"
-//             }]).then(function (inquirerResponse) {
-//             console.log("Quantity: " + inquirerResponse.order_quantity);
-//         });
-//         checkQuantity();
-//     } else {
-//         console.log("Your order has been placed! Thank you for shopping with us!");
-//     };
-// }
 
 // run app
 connection.connect(function(err) {
