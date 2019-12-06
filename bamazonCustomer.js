@@ -40,18 +40,25 @@ function customerPrompt() {
         if (err) throw err;
         inquirer.prompt([
             {
-                name: "product_id",
+                name: "order_id",
                 message: "What is the ID of the product you are interested in?"
             }]).then(function (inquirerResponse) {
-                    console.log("You have selected: " + res[inquirerResponse.product_id-1].product_name);
+                    var productID = inquirerResponse.order_id-1;
+                    console.log("You have selected: " + res[productID].product_name);
                 inquirer.prompt([
                     {
-                        name: "product_quantity",
+                        name: "order_quantity",
                         message: "How many would you like to purchase?"
                     }]).then(function (inquirerResponse) {
-                    console.log("Quantity: " + inquirerResponse.product_quantity);
+                    console.log("Quantity: " + inquirerResponse.order_quantity);
+                    var remainingQuant = res[productID].stock_quantity - inquirerResponse.order_quantity;
+                    if (remainingQuant < 0) {
+                        console.log("Unfortunately, we are running too low on this product to complete your order. Please change the quantity of your order.");
+                    } else {
+                        console.log("Your order has been placed! Thank you for shopping with us!");
+                    };
                 });
-        });
+            });
     });
 };
 
@@ -64,6 +71,27 @@ function displayWelcome() {
     console.log("The Online Store That Makes Packing for Your Travel Needs a Breeze");
     console.log("---------------------------------------------");
 }
+
+// check quantity
+// function checkQuantity() {
+//     var remainingQuant = res[inquirerResponse.order_id-1].stock_quantity - inquirerResponse.order_quantity;
+//     console.log("Remaining Quantity: " + remainingQuant);
+//     if (remainingQuant < 0) {
+//         console.log("Unfortunately, we are running too low on this product to complete your order. Please change the quantity of your order.");
+//         inquirer.prompt([
+//             {
+//                 name: "order_quantity",
+//                 message: "How many would you like to purchase?"
+//             }]).then(function (inquirerResponse) {
+//             console.log("Quantity: " + inquirerResponse.order_quantity);
+//         });
+//         checkQuantity();
+//     } else {
+//         console.log("Your order has been placed! Thank you for shopping with us!");
+//     };
+// }
+
+// run app
 connection.connect(function(err) {
     if (err) {
          throw err
