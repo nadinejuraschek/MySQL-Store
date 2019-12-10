@@ -20,7 +20,7 @@ var connection = mysql.createConnection({
 
     // password
     password: "password",
-    database: "bamazon",
+    database: "travelEasy_db",
 });
 
 function displayProducts() {
@@ -43,22 +43,37 @@ function customerPrompt() {
                 name: "order_id",
                 message: "What is the ID of the product you are interested in?"
             }]).then(function (inquirerResponse) {
+                    var originalID =  inquirerResponse.order_id;
                     var productID = inquirerResponse.order_id-1;
+                    console.log("Original ID: " + originalID);
+                    console.log("Product ID: " + productID);
                     console.log("You have selected: " + res[productID].product_name);
                 inquirer.prompt([
                     {
                         name: "order_quantity",
                         message: "How many would you like to purchase?"
                     }]).then(function (inquirerResponse) {
-                    console.log("Quantity: " + inquirerResponse.order_quantity);
-                    var remainingQuant = res[productID].stock_quantity - inquirerResponse.order_quantity;
-                    if (remainingQuant < 0) {
-                        console.log("Unfortunately, we are running too low on this product to complete your order. Please change the quantity of your order.");
-                        remainingQuant = res[productID].stock_quantity;
-                    } else {
-                        console.log("Your order has been placed! Thank you for shopping with us!");
-                    };
-                });
+                        var orderedQuant = inquirerResponse.order_quantity;
+                        var stockQuant = res[productID].stock_quantity;
+                    console.log("Ordered Quantity: " + orderedQuant);
+                        if (orderedQuant > stockQuant) {
+                            console.log("Unfortunately, we are running too low on this product to complete your order. Please change the quantity of your order.");
+                        } else {
+                            var remainingQuant = stockQuant - orderedQuant;
+                            connection.query( "UPDATE produtcs SET ? WHERE ?",
+                                [
+                                  {
+                                    stock_quantity: remainingQuant
+                                  },
+                                  {
+                                    item_id: productID
+                                  }
+                                ], function() {
+                                        console.log("Remaining Quantity: " + remainingQuant);
+                                        console.log("Your order has been placed! Thank you for shopping with us!");
+                                    });
+                        };
+                    });
             });
     });
 };
