@@ -50,14 +50,20 @@ function start() {
             connection.query("SELECT * FROM products", function(err, res) {
                 if (err) throw err;
                 console.table(res);
+                start();
             });
         } else if (inquirerResponse.selectAction == "View Low Inventory") {
-                // displayLowInventory();
+            displayLowInventory();
+            start();
         } else if (inquirerResponse.selectAction == "Add Inventory") {
                 // addInventory();
-        } else {
+            start();
+        } else if (inquirerResponse.selectAction == "Add Products") {
                 // addProducts();
-            };
+            start();
+        } else {
+            connection.end();
+        };
     });
 };
 
@@ -73,6 +79,14 @@ function displayWelcome() {
     console.log("---------------------------------------------");
 }
 
+function displayLowInventory() {
+    console.log("Low Inventory Items:");
+    connection.query("SELECT * FROM products WHERE stock_quantity < 50", function(err, res) {
+        if (err) throw err;
+        console.table(res);
+    });
+};
+
 // run app
 connection.connect(function(err) {
     if (err) {
@@ -80,6 +94,4 @@ connection.connect(function(err) {
      };
      console.log("connected as id ", connection.threadId);
      start();
-     // displayProducts();
-     connection.end();
 });
