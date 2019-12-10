@@ -58,19 +58,21 @@ function customerPrompt() {
                     console.log("Ordered Quantity: " + orderedQuant);
                         if (orderedQuant > stockQuant) {
                             console.log("Unfortunately, we are running too low on this product to complete your order. Please change the quantity of your order.");
+                            keepShopping();
                         } else {
                             var remainingQuant = stockQuant - orderedQuant;
-                            connection.query( "UPDATE produtcs SET ? WHERE ?",
+                            connection.query( "UPDATE products SET ? WHERE ?",
                                 [
                                   {
                                     stock_quantity: remainingQuant
                                   },
                                   {
-                                    item_id: productID
+                                    item_id: originalID
                                   }
                                 ], function() {
                                         console.log("Remaining Quantity: " + remainingQuant);
                                         console.log("Your order has been placed! Thank you for shopping with us!");
+                                        keepShopping();
                                     });
                         };
                     });
@@ -88,6 +90,23 @@ function displayWelcome() {
     console.log("---------------------------------------------");
 }
 
+function keepShopping() {
+    inquirer.prompt([
+        {
+            name: "keepShopping",
+            type: "rawlist",
+            message: "Would you like to keep shopping?",
+            choices: ["YES", "NO"]
+        }
+    ]).then(function (inquirerResponse) {
+       if (inquirerResponse.keepShopping.toUpperCase() == "YES") {
+           customerPrompt();
+       } else {
+           connection.end();
+       }
+    });
+}
+
 // run app
 connection.connect(function(err) {
     if (err) {
@@ -97,6 +116,5 @@ connection.connect(function(err) {
      displayWelcome();
      displayProducts();
      customerPrompt();
-     connection.end();
-  });
+});
 
