@@ -42,26 +42,19 @@ function start() {
             name: "selectAction",
             type: "rawlist",
             message: "Select a Management Tool:",
-            choices: ["View Products for Sale", "View Low Inventory", "Add Inventory", "Add Products"]
+            choices: ["View Products for Sale", "View Low Inventory", "Add Inventory", "Add Product", "Quit Manager"]
         }
     ]).then(function(inquirerResponse) {
         if (inquirerResponse.selectAction == "View Products for Sale") {
             console.log("Product Overview:");
-            connection.query("SELECT * FROM products", function(err, res) {
-                if (err) throw err;
-                console.table(res);
-                start();
-            });
+            displayProducts();
         } else if (inquirerResponse.selectAction == "View Low Inventory") {
             displayLowInventory();
-            start();
         } else if (inquirerResponse.selectAction == "Add Inventory") {
-                // addInventory();
-            start();
-        } else if (inquirerResponse.selectAction == "Add Products") {
-                // addProducts();
-            start();
-        } else {
+            addInventory();
+        } else if (inquirerResponse.selectAction == "Add Product") {
+            addProduct();
+        } else if (inquirerResponse.selectAction == "Quit Manager") {
             connection.end();
         };
     });
@@ -84,6 +77,81 @@ function displayLowInventory() {
     connection.query("SELECT * FROM products WHERE stock_quantity < 50", function(err, res) {
         if (err) throw err;
         console.table(res);
+    });
+};
+
+function addInventory() {
+    console.log("Add Inventory: ");
+    connection.query("SELECT * FROM products", function(err, res) {
+        if (err) throw err;
+        inquirer.prompt([
+            {
+                name: "item_id",
+                message: "Which item would you like to add inventory for? Please enter the item's ID:"
+            }]).then(function (inquirerResponse) {
+                    var originalID =  inquirerResponse.item_id;
+                    var productID = inquirerResponse.item_id-1;
+                    var stockQuant = res[productID].stock_quantity;
+                    var selectedProduct = res[productID].product_name;
+                    console.log("Original ID: " + originalID);
+                    console.log("Product ID: " + productID);
+                    console.log("You have selected: " + selectedProduct);
+
+                inquirer.prompt([
+                    {
+                        name: "addInventory",
+                        message: "How many items will be added?"
+                    }]).then(function (inquirerResponse) {
+                        var itemsToAdd = Number(inquirerResponse.addInventory);
+                        console.log("Quantity to Add: " + itemsToAdd);
+                        var newQuant = stockQuant + itemsToAdd;
+                        connection.query( "UPDATE products SET ? WHERE ?",
+                        [
+                            {
+                                stock_quantity: newQuant
+                            },
+                            {
+                                item_id: originalID
+                            }
+                        ], function() {
+                            console.log("The stock quantity of " + selectedProduct + " is now " + newQuant + ".")
+                        });
+                    });
+                });
+    });
+};
+
+function addProduct() {
+    console.log("Add a Product:");
+    inquirer.prompt([
+        {
+            name: "productName",
+            message: "What is the product's name?"
+        },
+        {
+            name: "departmentName",
+            message: "Which department can it be found in?"
+        },
+        {
+            name: "price",
+            message: "What is the price per item?"
+        },
+        {
+            name: "stockQuantity",
+            message: "How many items are available?"
+        }
+    ]).then(function(inquirerResponse) {
+        var productName = inquirerResponse.productName;
+        var departmentName = inquirerResponse.departmentName;
+        var price = inquirerResponse.price;
+        var stockQuantity = inquirerResponse.stockQuantity;
+        connection.query("INSERT INTO products (product_name, department_name, price, stock_quantity) VALUES ('" + productName + "', '" + departmentName + "', '" + price + "', '" + stockQuantity + "')", function(err, res) {
+            if (err) {
+                console.log("Upps! There was an error when adding the product. Please try again.");
+            } else {
+                console.log("The product has been added successfully!");
+            }
+        });
     });
 };
 
