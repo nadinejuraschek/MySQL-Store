@@ -20,16 +20,8 @@ var connection = mysql.createConnection({
 
     // password
     password: "password",
-    database: "bamazon",
+    database: "travelEasy_db",
 });
-
-function displayProducts() {
-    console.log("Product Overview:");
-    connection.query("SELECT * FROM products", function(err, res) {
-      if (err) throw err;
-      console.table(res);
-    });
-};
 
 /*************************************
 INQUIRER
@@ -71,6 +63,14 @@ function displayWelcome() {
     console.log("MANAGEMENT APPLICATION");
     console.log("---------------------------------------------");
 }
+
+function displayProducts() {
+    console.log("Product Overview:");
+    connection.query("SELECT * FROM products", function(err, res) {
+      if (err) throw err;
+      console.table(res);
+    });
+};
 
 function displayLowInventory() {
     console.log("Low Inventory Items:");
@@ -160,6 +160,6 @@ connection.connect(function(err) {
     if (err) {
          throw err
      };
-     console.log("connected as id ", connection.threadId);
+     // console.log("connected as id ", connection.threadId);
      start();
 });
