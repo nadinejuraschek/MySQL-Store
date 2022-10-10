@@ -32,31 +32,14 @@ In supervisor view, access to a second database called "departments" is granted 
 
 ## How to Run the App
 
-### Customer
-
 ```
-    node customer.js
-```
-
-### Manager
-
-```
-    node manager.js
-```
-
-### Supervisor -- Coming Soon
-
-```
-    node supervisor.js
+  npm run start
 ```
 
 ## Technologies
 
 - JavaScript
-
 - Node.js
-
   - Inquirer
   - console.table
-
 - MySQL
